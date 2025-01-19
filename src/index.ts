@@ -24,36 +24,24 @@ function getFileName(title: string): string {
     return `${truncated}`;
 }
 
-// Source: https://github.com/frostime/sy-titled-link
 const getTitle = async (href) => {
     console.log(href);
+
     let title = null;
-    if (href.startsWith("www.")) {
-        href = "http://" + href;
-    }
-    if (href.startsWith("http")) {
-        let data = await forwardProxy(
-            href, 'GET', null,
-            [{ 'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.76" }],
-            5000, 'text/html'
-        );
-        if (!data || (data.status / 100) !== 2) {
-            return null;
-        }
-        let html = data?.body;
-        let charsetReg = /<meta\b[^>]*charset=['"]?([^'"]*)['"]?[^>]*>/;
-        let titleReg = /<title\b[^>]*>(.*?)<\/title>/;
-        let matchRes = html?.match(titleReg);
-        if (matchRes) {
-            title = matchRes[1];
-            title = window.Lute.UnEscapeHTMLStr(title);
-            matchRes = html?.match(charsetReg);
-            let charset = matchRes ? matchRes[1] : "utf-8";
-            if (charset.toLowerCase() !== "utf-8") {
-                title = null;
-            }
-        }
-    }
+    if (!href.startsWith("http")) href = "http://" + href;
+
+    let data = await forwardProxy(
+        href, 'GET', null,
+        [{ 'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.76" }],
+        5000, 'text/html'
+    );
+    if (!data || (data.status / 100) !== 2) return null;
+
+    const doc = new DOMParser().parseFromString(data?.body, "text/html");
+    const charset = doc.characterSet;
+
+    if (charset.toLowerCase() === "utf-8") title = doc.title;
+
     return title;
 }
 
