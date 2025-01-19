@@ -135,8 +135,11 @@ export default class UrlNotesPlugin extends Plugin {
     };
 
     URLNote = async (protyle: Protyle) => {
+        protyle.insert(window.Lute.Caret, false, true);
+
         try {
             const link = (await this.URLInputDialog()) as string;
+
             if (!link) {
                 return;
             }
@@ -155,6 +158,7 @@ export default class UrlNotesPlugin extends Plugin {
             protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
         } catch (error) {
             console.error(error);
+            protyle.insert(window.Lute.Caret, false, true);
         }
     }
 }
