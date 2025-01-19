@@ -1,5 +1,6 @@
 {
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "enterUrl": "Please enter the URL"
+    "enterUrl": "Please enter the URL",
+    "insertUrlNote": "Insert URL Note"
 }

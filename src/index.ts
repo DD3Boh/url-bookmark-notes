@@ -87,6 +87,21 @@ export default class UrlNotesPlugin extends Plugin {
             id: "URL Note",
             callback: this.URLNote,
         }]
+
+        this.protyleOptions = {
+            toolbar: [
+                {
+                    name: "insert-url-note",
+                    icon: "iconUrl",
+                    hotkey: "⇧⌘L",
+                    tipPosition: "n",
+                    tip: this.i18n.insertUrlNote,
+                    click: async (protyle: Protyle) => {
+                        this.URLNote(protyle);
+                    }
+                }
+            ],
+        }
     }
 
     onLayoutReady() {
