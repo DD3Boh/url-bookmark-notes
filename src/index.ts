@@ -24,58 +24,6 @@ function getFileName(title: string): string {
     return `${truncated}`;
 }
 
-// Source: https://github.com/anarion80/siyuan-oembed
-export const URLInputDialog = () => {
-    return new Promise((resolve, reject) => {
-        const dialog = new Dialog({
-            content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="Please enter the URL"></textarea></div>
-                    <div class="b3-dialog__action">
-                    <button class="b3-button b3-button--cancel">Cancel</button><div class="fn__space"></div>
-                    <button class="b3-button b3-button--text">Confirm</button>
-                    </div>`,
-            width: "520px",
-        });
-        const inputElement = dialog.element.querySelector("textarea");
-        const btnsElement = dialog.element.querySelectorAll(".b3-button");
-        dialog.bindInput(inputElement, () => {
-            (btnsElement[1] as HTMLElement).click();
-        });
-        inputElement.focus();
-        btnsElement[0].addEventListener("click", () => {
-            dialog.destroy();
-            reject();
-        });
-        btnsElement[1].addEventListener("click", () => {
-            dialog.destroy();
-            resolve(inputElement.value);
-        });
-    });
-};
-
-export const URLNote = async (protyle: Protyle) => {
-    try {
-        const link = (await URLInputDialog()) as string;
-        if (!link) {
-            return;
-        }
-
-        const title = await getTitle(link);
-        if (!title) {
-            showMessage("Failed to fetch title");
-            return;
-        }
-
-        let notebookId = protyle.protyle.notebookId
-        let path = await getHPathByPath(notebookId, protyle.protyle.path)
-        let fileName = getFileName(title)
-        path += "/" + fileName
-        let docId = await createDocWithMd(notebookId, path, `[${title}](${link})`)
-        protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 // Source: https://github.com/frostime/sy-titled-link
 const getTitle = async (href) => {
     console.log(href);
@@ -137,7 +85,7 @@ export default class UrlNotesPlugin extends Plugin {
             filter: ["URL", "Link", "Note"],
             html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">URL Note</span><span class="b3-list-item__meta">Ctrl+Shift+L</span></div>`,
             id: "URL Note",
-            callback: URLNote,
+            callback: this.URLNote,
         }]
     }
 
@@ -153,5 +101,57 @@ export default class UrlNotesPlugin extends Plugin {
 
     uninstall() {
         console.log("uninstall");
+    }
+
+    // Source: https://github.com/anarion80/siyuan-oembed
+    URLInputDialog = () => {
+        return new Promise((resolve, reject) => {
+            const dialog = new Dialog({
+                content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="Please enter the URL"></textarea></div>
+                        <div class="b3-dialog__action">
+                        <button class="b3-button b3-button--cancel">Cancel</button><div class="fn__space"></div>
+                        <button class="b3-button b3-button--text">Confirm</button>
+                        </div>`,
+                width: "520px",
+            });
+            const inputElement = dialog.element.querySelector("textarea");
+            const btnsElement = dialog.element.querySelectorAll(".b3-button");
+            dialog.bindInput(inputElement, () => {
+                (btnsElement[1] as HTMLElement).click();
+            });
+            inputElement.focus();
+            btnsElement[0].addEventListener("click", () => {
+                dialog.destroy();
+                reject();
+            });
+            btnsElement[1].addEventListener("click", () => {
+                dialog.destroy();
+                resolve(inputElement.value);
+            });
+        });
+    };
+
+    URLNote = async (protyle: Protyle) => {
+        try {
+            const link = (await this.URLInputDialog()) as string;
+            if (!link) {
+                return;
+            }
+
+            const title = await getTitle(link);
+            if (!title) {
+                showMessage("Failed to fetch title");
+                return;
+            }
+
+            let notebookId = protyle.protyle.notebookId
+            let path = await getHPathByPath(notebookId, protyle.protyle.path)
+            let fileName = getFileName(title)
+            path += "/" + fileName
+            let docId = await createDocWithMd(notebookId, path, `[${title}](${link})`)
+            protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
