@@ -107,10 +107,10 @@ export default class UrlNotesPlugin extends Plugin {
     URLInputDialog = () => {
         return new Promise((resolve, reject) => {
             const dialog = new Dialog({
-                content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="Please enter the URL"></textarea></div>
+                content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea></div>
                         <div class="b3-dialog__action">
-                        <button class="b3-button b3-button--cancel">Cancel</button><div class="fn__space"></div>
-                        <button class="b3-button b3-button--text">Confirm</button>
+                        <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button><div class="fn__space"></div>
+                        <button class="b3-button b3-button--text">${this.i18n.confirm}</button>
                         </div>`,
                 width: "520px",
             });

@@ -1,3 +1,5 @@
 {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "enterUrl": "Please enter the URL"
 }
