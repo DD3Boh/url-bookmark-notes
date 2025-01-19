@@ -9,7 +9,7 @@ import "@/index.scss";
 import { SettingUtils } from "./libs/setting-utils";
 const STORAGE_NAME = "menu-config";
 
-export default class PluginSample extends Plugin {
+export default class UrlNotesPlugin extends Plugin {
     customTab: () => IModel;
     private isMobile: boolean;
     private settingUtils: SettingUtils;
