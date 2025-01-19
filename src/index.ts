@@ -141,10 +141,10 @@ export default class UrlNotesPlugin extends Plugin {
                 return;
             }
 
-            const title = await getTitle(link);
+            let title = await getTitle(link);
             if (!title) {
                 showMessage("Failed to fetch title");
-                return;
+                title = link;
             }
 
             let notebookId = protyle.protyle.notebookId
