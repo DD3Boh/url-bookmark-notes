@@ -1,2 +1,2 @@
 
-# SiYuan URL Notes Bookmarks Plugin
+# SiYuan URL Bookmark Notes
