@@ -15,7 +15,7 @@ You can use the plugin with the slash menu (`/url`) or by using the specified ke
 
 The plugin can also be used from the toolbar menu. In case there's a pre-existing selection, it will be used as document title.
 
-![Usage GIF](asset/showcase.gif)
+![Usage GIF](https://raw.githubusercontent.com/DD3Boh/url-bookmark-notes/refs/heads/main/asset/showcase.gif)
 
 ## Contributing
 
