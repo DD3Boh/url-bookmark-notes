@@ -135,6 +135,13 @@ export default class UrlNotesPlugin extends Plugin {
     };
 
     URLNote = async (protyle: Protyle) => {
+        let selectElement = protyle.protyle.contentElement
+        let rangeString = protyle.getRange(selectElement).toString().trim();
+
+        let title = null
+        if (rangeString.length > 0 && !rangeString.startsWith("/"))
+            title = rangeString;
+
         protyle.insert(window.Lute.Caret, false, true);
 
         try {
@@ -144,17 +151,19 @@ export default class UrlNotesPlugin extends Plugin {
                 return;
             }
 
-            let title = await getTitle(link);
-            if (!title) {
+            let urlTitle = await getTitle(link);
+            if (!urlTitle) {
                 showMessage("Failed to fetch title");
-                title = link;
+                urlTitle = link;
             }
+
+            if (!title) title = urlTitle;
 
             let notebookId = protyle.protyle.notebookId
             let path = await getHPathByPath(notebookId, protyle.protyle.path)
             let fileName = getFileName(title)
             path += "/" + fileName
-            let docId = await createDocWithMd(notebookId, path, `[${title}](${link})`)
+            let docId = await createDocWithMd(notebookId, path, `[${urlTitle}](${link})`)
             protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
         } catch (error) {
             console.error(error);
