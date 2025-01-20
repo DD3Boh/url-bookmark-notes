@@ -53,7 +53,7 @@ export default class UrlNotesPlugin extends Plugin {
     async onload() {
         this.data[STORAGE_NAME] = { readonlyText: "Readonly" };
 
-        console.log("loading siyuan-url-notes", this.i18n);
+        console.log("loading url-bookmark-notes", this.i18n);
 
         const frontEnd = getFrontend();
         this.isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile";
