@@ -10,11 +10,11 @@ import {
 import "@/index.scss";
 
 import { createDocWithMd, forwardProxy, getHPathByPath } from "./api";
+import { Readability } from "@mozilla/readability";
 
-const getTitle = async (href) => {
+const getUrlContent = async (href) => {
     console.log(href);
 
-    let title = null;
     if (!href.startsWith("http")) href = "http://" + href;
 
     let data = await forwardProxy(
@@ -22,14 +22,27 @@ const getTitle = async (href) => {
         [{ 'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.76" }],
         5000, 'text/html'
     );
-    if (!data || (data.status / 100) !== 2) return null;
+
+    if (!data || (data.status / 100) !== 2)
+        return { urlTitle: null, urlContent: null };
 
     const doc = new DOMParser().parseFromString(data?.body, "text/html");
-    const charset = doc.characterSet;
+    const readableHTML = new Readability(doc).parse();
+    let urlTitle = null;
 
-    if (charset.toLowerCase() === "utf-8") title = doc.title;
+    if (doc.characterSet.toLowerCase() === "utf-8")
+        urlTitle = doc.title;
 
-    return title;
+    const urlContent = readableHTML.content;
+
+    return { urlTitle, urlContent };
+}
+
+const trimEmptyLines = (input: string) => {
+    return input
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .join('\n');
 }
 
 export default class UrlNotesPlugin extends Plugin {
@@ -132,7 +145,8 @@ export default class UrlNotesPlugin extends Plugin {
         });
     };
 
-    URLNote = async (protyle: Protyle, useRef: boolean = true) => {
+    URLNote = async (protyle: Protyle, useRef: boolean = true,
+        includeContent: boolean = false) => {
         let selectElement = protyle.protyle.contentElement
         let rangeString = protyle.getRange(selectElement).toString().trim();
 
@@ -148,20 +162,23 @@ export default class UrlNotesPlugin extends Plugin {
                 return;
             }
 
-            let urlTitle = await getTitle(link);
+            let { urlTitle, urlContent } = await getUrlContent(link);
             if (!urlTitle) {
                 showMessage("Failed to fetch title");
                 urlTitle = link;
             }
+
+            includeContent = includeContent && urlContent != null;
 
             if (!title) title = urlTitle;
 
             const notebookId = protyle.protyle.notebookId
             const path = `${await getHPathByPath(notebookId,
                 protyle.protyle.path)}/${title.replace(/\//g, " ")}`;
-            let docId = await createDocWithMd(notebookId, path, `[${urlTitle}](${link})`)
 
-            protyle.insert(window.Lute.Caret, false, true);
+            const docContent = includeContent ?
+                trimEmptyLines(urlContent) : `[${urlTitle}](${link})`;
+            const docId = await createDocWithMd(notebookId, path, docContent);
 
             if (useRef)
                 protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
