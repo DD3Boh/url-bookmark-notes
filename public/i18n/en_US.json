@@ -2,5 +2,6 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "enterUrl": "Please enter the URL",
-    "insertUrlNote": "Insert URL Note"
+    "urlLinkNote": "Link URL Note",
+    "urlRefNote": "Ref URL Note"
 }

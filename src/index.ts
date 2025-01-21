@@ -54,23 +54,45 @@ export default class UrlNotesPlugin extends Plugin {
         this.isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile";
         this.addIcons(`<symbol id="iconUrl" viewBox="0 0 1024 1024"><path d="M578.133 675.627c-3.306-3.307-8.746-3.307-12.053 0L442.133 799.573c-57.386 57.387-154.24 63.467-217.6 0-63.466-63.466-57.386-160.213 0-217.6L348.48 458.027c3.307-3.307 3.307-8.747 0-12.054l-42.453-42.453c-3.307-3.307-8.747-3.307-12.054 0L170.027 527.467c-90.24 90.24-90.24 236.266 0 326.4s236.266 90.24 326.4 0L620.373 729.92c3.307-3.307 3.307-8.747 0-12.053l-42.24-42.24z m275.84-505.6c-90.24-90.24-236.266-90.24-326.4 0L403.52 293.973c-3.307 3.307-3.307 8.747 0 12.054l42.347 42.346c3.306 3.307 8.746 3.307 12.053 0l123.947-123.946c57.386-57.387 154.24-63.467 217.6 0 63.466 63.466 57.386 160.213 0 217.6L675.52 565.973c-3.307 3.307-3.307 8.747 0 12.054l42.453 42.453c3.307 3.307 8.747 3.307 12.054 0l123.946-123.947c90.134-90.24 90.134-236.266 0-326.506z"></path><path d="M616.64 362.987c-3.307-3.307-8.747-3.307-12.053 0l-241.6 241.493c-3.307 3.307-3.307 8.747 0 12.053l42.24 42.24c3.306 3.307 8.746 3.307 12.053 0L658.773 417.28c3.307-3.307 3.307-8.747 0-12.053l-42.133-42.24z"></path></symbol>`);
 
-        this.protyleSlash = [{
-            filter: ["URL", "Link", "Note"],
-            html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">URL Note</span><span class="b3-list-item__meta">Ctrl+Shift+L</span></div>`,
-            id: "URL Note",
-            callback: this.URLNote,
-        }]
+        this.protyleSlash = [
+            {
+                filter: ["URL", "Link", "Note"],
+                html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlRefNote}</span><span class="b3-list-item__meta">Ctrl+Shift+,</span></div>`,
+                id: "URL Note Ref",
+                callback: async (protyle: Protyle) => {
+                    this.URLNote(protyle, true);
+                }
+            },
+            {
+                filter: ["URL", "Link", "Note", "Ref"],
+                html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlLinkNote}</span><span class="b3-list-item__meta">Ctrl+Shift+L</span></div>`,
+                id: "URL Note Link",
+                callback: async (protyle: Protyle) => {
+                    this.URLNote(protyle, false);
+                }
+            },
+        ]
 
         this.protyleOptions = {
             toolbar: [
                 {
-                    name: "insert-url-note",
+                    name: "insert-url-note-ref",
+                    icon: "iconUrl",
+                    hotkey: "⇧⌘,",
+                    tipPosition: "n",
+                    tip: this.i18n.urlRefNote,
+                    click: async (protyle: Protyle) => {
+                        this.URLNote(protyle, true);
+                    }
+                },
+                {
+                    name: "insert-url-note-link",
                     icon: "iconUrl",
                     hotkey: "⇧⌘L",
                     tipPosition: "n",
-                    tip: this.i18n.insertUrlNote,
+                    tip: this.i18n.urlLinkNote,
                     click: async (protyle: Protyle) => {
-                        this.URLNote(protyle);
+                        this.URLNote(protyle, false);
                     }
                 }
             ],
@@ -117,7 +139,7 @@ export default class UrlNotesPlugin extends Plugin {
         });
     };
 
-    URLNote = async (protyle: Protyle) => {
+    URLNote = async (protyle: Protyle, useRef: boolean = true) => {
         let selectElement = protyle.protyle.contentElement
         let rangeString = protyle.getRange(selectElement).toString().trim();
 
@@ -147,7 +169,11 @@ export default class UrlNotesPlugin extends Plugin {
             let fileName = getFileName(title)
             path += "/" + fileName
             let docId = await createDocWithMd(notebookId, path, `[${urlTitle}](${link})`)
-            protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
+
+            if (useRef)
+                protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
+            else
+                protyle.insert(`[${title}](siyuan://blocks/${docId})`, false, true);
         } catch (error) {
             console.error(error);
             protyle.insert(window.Lute.Caret, false, true);
