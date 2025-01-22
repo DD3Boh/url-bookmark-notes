@@ -112,7 +112,7 @@ export default class UrlNotesPlugin extends Plugin {
     }
 
     // Source: https://github.com/anarion80/siyuan-oembed
-    URLInputDialog = () => {
+    URLInputDialog = (protyle: Protyle, rangeString: string) => {
         return new Promise((resolve, reject) => {
             const dialog = new Dialog({
                 content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea></div>
@@ -121,6 +121,10 @@ export default class UrlNotesPlugin extends Plugin {
                         <button class="b3-button b3-button--text">${this.i18n.confirm}</button>
                         </div>`,
                 width: "520px",
+                destroyCallback: () => {
+                    if (rangeString == null)
+                        protyle.insert(window.Lute.Caret, false, true);
+                }
             });
             const inputElement = dialog.element.querySelector("textarea");
             const btnsElement = dialog.element.querySelectorAll(".b3-button");
@@ -143,14 +147,13 @@ export default class UrlNotesPlugin extends Plugin {
         let selectElement = protyle.protyle.contentElement
         let rangeString = protyle.getRange(selectElement).toString().trim();
 
-        let title = null
-        if (rangeString.length > 0 && !rangeString.startsWith("/"))
-            title = rangeString;
+        if (rangeString.length == 0 || rangeString.startsWith("/"))
+            rangeString = null;
 
-        protyle.insert(window.Lute.Caret, false, true);
+        let title = rangeString
 
         try {
-            const link = (await this.URLInputDialog()) as string;
+            const link = (await this.URLInputDialog(protyle, rangeString)) as string;
 
             if (!link) {
                 return;
@@ -170,13 +173,14 @@ export default class UrlNotesPlugin extends Plugin {
             path += "/" + fileName
             let docId = await createDocWithMd(notebookId, path, `[${urlTitle}](${link})`)
 
+            protyle.insert(window.Lute.Caret, false, true);
+
             if (useRef)
                 protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
             else
                 protyle.insert(`[${title}](siyuan://blocks/${docId})`, false, true);
         } catch (error) {
             console.error(error);
-            protyle.insert(window.Lute.Caret, false, true);
         }
     }
 }
