@@ -2,7 +2,7 @@ import {
     Plugin,
     getFrontend,
     getBackend,
-    IModel,
+    Custom,
     Dialog,
     Protyle,
     showMessage,
@@ -44,7 +44,7 @@ const getTitle = async (href) => {
 }
 
 export default class UrlNotesPlugin extends Plugin {
-    customTab: () => IModel;
+    customTab: () => Custom;
     private isMobile: boolean;
 
     async onload() {
