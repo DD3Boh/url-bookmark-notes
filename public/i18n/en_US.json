@@ -3,5 +3,7 @@
     "confirm": "Confirm",
     "enterUrl": "Please enter the URL",
     "urlLinkNote": "Link URL Note",
-    "urlRefNote": "Ref URL Note"
+    "urlRefNote": "Ref URL Note",
+    "includeContent": "Include Content",
+    "includeContentDesc": "Include the content of the page in the note. If disabled only the URL will be saved."
 }
