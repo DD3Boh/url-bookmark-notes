@@ -11,17 +11,6 @@ import "@/index.scss";
 
 import { createDocWithMd, forwardProxy, getHPathByPath } from "./api";
 
-function getFileName(title: string): string {
-    const sanitized = title
-        .replace(/[\/\\?%*:|"<>]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    const maxLength = 127;
-    const truncated = sanitized.length > maxLength ? sanitized.slice(0, maxLength) : sanitized;
-
-    return `${truncated}`;
-}
-
 const getTitle = async (href) => {
     console.log(href);
 
@@ -167,10 +156,9 @@ export default class UrlNotesPlugin extends Plugin {
 
             if (!title) title = urlTitle;
 
-            let notebookId = protyle.protyle.notebookId
-            let path = await getHPathByPath(notebookId, protyle.protyle.path)
-            let fileName = getFileName(title)
-            path += "/" + fileName
+            const notebookId = protyle.protyle.notebookId
+            const path = `${await getHPathByPath(notebookId,
+                protyle.protyle.path)}/${title.replace(/\//g, " ")}`;
             let docId = await createDocWithMd(notebookId, path, `[${urlTitle}](${link})`)
 
             protyle.insert(window.Lute.Caret, false, true);
