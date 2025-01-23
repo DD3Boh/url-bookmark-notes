@@ -57,6 +57,32 @@ export default class UrlNotesPlugin extends Plugin {
         return this.settingUtils.get("includeContent");
     }
 
+    updateProtyleToolbar = (toolbar) => {
+        toolbar.push(
+            {
+                name: "insert-url-note-ref",
+                icon: "iconUrl",
+                hotkey: "⇧⌘,",
+                tipPosition: "n",
+                tip: this.i18n.urlRefNote,
+                click: async (protyle: Protyle) => {
+                    this.URLNote(protyle, true);
+                }
+            },
+            {
+                name: "insert-url-note-link",
+                icon: "iconUrl",
+                hotkey: "⇧⌘L",
+                tipPosition: "n",
+                tip: this.i18n.urlLinkNote,
+                click: async (protyle: Protyle) => {
+                    this.URLNote(protyle, false);
+                }
+            },
+        )
+        return toolbar;
+    }
+
     async onload() {
         this.data[STORAGE_NAME] = { };
 
@@ -109,31 +135,6 @@ export default class UrlNotesPlugin extends Plugin {
                 }
             },
         ]
-
-        this.protyleOptions = {
-            toolbar: [
-                {
-                    name: "insert-url-note-ref",
-                    icon: "iconUrl",
-                    hotkey: "⇧⌘,",
-                    tipPosition: "n",
-                    tip: this.i18n.urlRefNote,
-                    click: async (protyle: Protyle) => {
-                        this.URLNote(protyle, true);
-                    }
-                },
-                {
-                    name: "insert-url-note-link",
-                    icon: "iconUrl",
-                    hotkey: "⇧⌘L",
-                    tipPosition: "n",
-                    tip: this.i18n.urlLinkNote,
-                    click: async (protyle: Protyle) => {
-                        this.URLNote(protyle, false);
-                    }
-                }
-            ],
-        }
     }
 
     onLayoutReady() {
