@@ -6,6 +6,7 @@ import {
     Dialog,
     Protyle,
     showMessage,
+    IProtyle,
 } from "siyuan";
 import "@/index.scss";
 
@@ -92,11 +93,18 @@ export default class UrlNotesPlugin extends Plugin {
         link: string,
         includeContent: boolean,
         title: string = null,
-        useRef: boolean = false
+        useRef: boolean = false,
+        abortOnFailure: boolean = false
     ) => {
         let { urlTitle, urlContent } = await getUrlContent(link);
         if (!urlTitle) {
             showMessage("Failed to fetch title");
+
+            if (abortOnFailure) {
+                protyle.insert(link, false, true);
+                return;
+            }
+
             urlTitle = link;
         }
 
@@ -144,6 +152,26 @@ export default class UrlNotesPlugin extends Plugin {
         return toolbar;
     }
 
+    private eventBusPaste(event: any) {
+        event.preventDefault();
+
+        let text = event.detail.textPlain;
+        let protyle = (event.detail.protyle as IProtyle).getInstance();
+
+        if (text.startsWith("http")) {
+            try {
+                this.createURLNote(protyle, text,
+                    this.includeContent(), null, false, true);
+            } catch (error) {
+                showMessage(error);
+            }
+        } else {
+            event.detail.resolve({
+                textPlain: event.detail.textPlain.trim(),
+            });
+        }
+    }
+
     async onload() {
         this.settingsManager = new SettingsManager(this);
         this.settingsManager.setupSettings();
@@ -172,6 +200,8 @@ export default class UrlNotesPlugin extends Plugin {
                 }
             },
         ]
+
+        this.eventBus.on("paste", (e) => this.eventBusPaste(e));
     }
 
     onLayoutReady() {
