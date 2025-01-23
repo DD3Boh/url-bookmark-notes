@@ -93,7 +93,7 @@ export default class UrlNotesPlugin extends Plugin {
 
         this.protyleSlash = [
             {
-                filter: ["URL", "Link", "Note"],
+                filter: ["URL", "Link", "Note", "Ref", "URLRef"],
                 html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlRefNote}</span><span class="b3-list-item__meta">Ctrl+Shift+,</span></div>`,
                 id: "URL Note Ref",
                 callback: async (protyle: Protyle) => {
@@ -101,7 +101,7 @@ export default class UrlNotesPlugin extends Plugin {
                 }
             },
             {
-                filter: ["URL", "Link", "Note", "Ref"],
+                filter: ["URL", "Link", "Note", "URLLink"],
                 html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlLinkNote}</span><span class="b3-list-item__meta">Ctrl+Shift+L</span></div>`,
                 id: "URL Note Link",
                 callback: async (protyle: Protyle) => {
