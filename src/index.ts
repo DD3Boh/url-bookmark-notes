@@ -66,28 +66,6 @@ export default class UrlNotesPlugin extends Plugin {
         });
     };
 
-    createURLNoteWithDialog = async (protyle: Protyle, useRef: boolean = true) => {
-        let selectElement = protyle.protyle.contentElement
-        let rangeString = protyle.getRange(selectElement).toString().trim();
-
-        if (rangeString.length == 0 || rangeString.startsWith("/"))
-            rangeString = null;
-
-        let title = rangeString
-
-        try {
-            let [ link, includeContent ] = (await this.URLInputDialog(protyle, rangeString))
-
-            if (!link) {
-                return;
-            }
-
-            await this.createURLNote(protyle, link, includeContent, title, useRef);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     createURLNote = async(
         protyle: Protyle,
         link: string,
@@ -124,6 +102,28 @@ export default class UrlNotesPlugin extends Plugin {
             protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
         else
             protyle.insert(`[${title}](siyuan://blocks/${docId})`, false, true);
+    }
+
+    createURLNoteWithDialog = async (protyle: Protyle, useRef: boolean = true) => {
+        let selectElement = protyle.protyle.contentElement
+        let rangeString = protyle.getRange(selectElement).toString().trim();
+
+        if (rangeString.length == 0 || rangeString.startsWith("/"))
+            rangeString = null;
+
+        let title = rangeString
+
+        try {
+            let [ link, includeContent ] = (await this.URLInputDialog(protyle, rangeString))
+
+            if (!link) {
+                return;
+            }
+
+            await this.createURLNote(protyle, link, includeContent, title, useRef);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     updateProtyleToolbar = (toolbar) => {
