@@ -97,7 +97,7 @@ export default class UrlNotesPlugin extends Plugin {
                 html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlRefNote}</span><span class="b3-list-item__meta">Ctrl+Shift+,</span></div>`,
                 id: "URL Note Ref",
                 callback: async (protyle: Protyle) => {
-                    this.URLNote(protyle, true, this.includeContent());
+                    this.URLNote(protyle, true);
                 }
             },
             {
@@ -105,7 +105,7 @@ export default class UrlNotesPlugin extends Plugin {
                 html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUrl"></use></svg><span class="b3-list-item__text">${this.i18n.urlLinkNote}</span><span class="b3-list-item__meta">Ctrl+Shift+L</span></div>`,
                 id: "URL Note Link",
                 callback: async (protyle: Protyle) => {
-                    this.URLNote(protyle, false, this.includeContent());
+                    this.URLNote(protyle, false);
                 }
             },
         ]
@@ -119,7 +119,7 @@ export default class UrlNotesPlugin extends Plugin {
                     tipPosition: "n",
                     tip: this.i18n.urlRefNote,
                     click: async (protyle: Protyle) => {
-                        this.URLNote(protyle, true, this.includeContent());
+                        this.URLNote(protyle, true);
                     }
                 },
                 {
@@ -129,7 +129,7 @@ export default class UrlNotesPlugin extends Plugin {
                     tipPosition: "n",
                     tip: this.i18n.urlLinkNote,
                     click: async (protyle: Protyle) => {
-                        this.URLNote(protyle, false, this.includeContent());
+                        this.URLNote(protyle, false);
                     }
                 }
             ],
@@ -149,11 +149,16 @@ export default class UrlNotesPlugin extends Plugin {
         console.log("uninstall");
     }
 
-    // Source: https://github.com/anarion80/siyuan-oembed
+    // Initial source: https://github.com/anarion80/siyuan-oembed
     URLInputDialog = (protyle: Protyle, rangeString: string) => {
-        return new Promise((resolve, reject) => {
+        return new Promise<[string, boolean]>((resolve, reject) => {
+            let includeContent = this.includeContent();
             const dialog = new Dialog({
                 content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea></div>
+                        <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
+                        <label for="includeContent">${this.i18n.includeContent}<div class="fn__space" style="width: 280px;"></div></label>
+                        <input type="checkbox" id="includeContent" name="includeContent" ${includeContent ? 'checked' : ''} class="b3-switch"/>
+                        </div>
                         <div class="b3-dialog__action">
                         <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button><div class="fn__space"></div>
                         <button class="b3-button b3-button--text">${this.i18n.confirm}</button>
@@ -164,8 +169,10 @@ export default class UrlNotesPlugin extends Plugin {
                         protyle.insert(window.Lute.Caret, false, true);
                 }
             });
+
             const inputElement = dialog.element.querySelector("textarea");
             const btnsElement = dialog.element.querySelectorAll(".b3-button");
+            const checkboxElement = dialog.element.querySelector('#includeContent');
             dialog.bindInput(inputElement, () => {
                 (btnsElement[1] as HTMLElement).click();
             });
@@ -176,13 +183,15 @@ export default class UrlNotesPlugin extends Plugin {
             });
             btnsElement[1].addEventListener("click", () => {
                 dialog.destroy();
-                resolve(inputElement.value);
+                resolve([inputElement.value, includeContent]);
+            });
+            checkboxElement.addEventListener('change', () => {
+                includeContent = (checkboxElement as HTMLInputElement).checked;
             });
         });
     };
 
-    URLNote = async (protyle: Protyle, useRef: boolean = true,
-        includeContent: boolean = false) => {
+    URLNote = async (protyle: Protyle, useRef: boolean = true) => {
         let selectElement = protyle.protyle.contentElement
         let rangeString = protyle.getRange(selectElement).toString().trim();
 
@@ -192,7 +201,7 @@ export default class UrlNotesPlugin extends Plugin {
         let title = rangeString
 
         try {
-            const link = (await this.URLInputDialog(protyle, rangeString)) as string;
+            let [ link, includeContent ] = (await this.URLInputDialog(protyle, rangeString))
 
             if (!link) {
                 return;
