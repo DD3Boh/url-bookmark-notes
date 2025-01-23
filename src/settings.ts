@@ -33,6 +33,21 @@ export class SettingsManager {
             },
         });
 
+        this.settingUtils.addItem({
+            key: "convertPaste",
+            value: false,
+            type: "checkbox",
+            title: this.plugin.i18n.convertPaste,
+            description: this.plugin.i18n.convertPasteDesc,
+            action: {
+                callback: () => {
+                    let value = !this.settingUtils.get("convertPaste");
+                    this.settingUtils.set("convertPaste", value);
+                    console.log(value);
+                },
+            },
+        });
+
         try {
             this.settingUtils.load();
         } catch (error) {

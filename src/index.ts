@@ -24,6 +24,10 @@ export default class UrlNotesPlugin extends Plugin {
         return this.settingsManager.getPref("includeContent");
     }
 
+    convertPaste = () => {
+        return this.settingsManager.getPref("convertPaste");
+    }
+
     // Initial source: https://github.com/anarion80/siyuan-oembed
     URLInputDialog = (protyle: Protyle, rangeString: string) => {
         return new Promise<[string, boolean]>((resolve, reject) => {
@@ -158,7 +162,7 @@ export default class UrlNotesPlugin extends Plugin {
         let text = event.detail.textPlain;
         let protyle = (event.detail.protyle as IProtyle).getInstance();
 
-        if (text.startsWith("http")) {
+        if (this.convertPaste() && text.startsWith("http")) {
             try {
                 this.createURLNote(protyle, text,
                     this.includeContent(), null, false, true);
