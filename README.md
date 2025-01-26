@@ -8,6 +8,8 @@ Welcome to the **URL Bookmark Notes** for SiYuan! This plugin is designed to sim
 - **Create New Note:** Creates a new note in SiYuan with the retrieved title as the note's title.
 - **Include URL:** The specified URL is included inside the newly created note for easy reference.
 - **Automatic Block Reference:** The plugin automatically inserts a block reference link to the created note.
+- **Include the website content in the note:** Uses Mozilla's simplified readability mode to include a simplified version of the website in the note.
+- **Support converting from pasting:** The plugin also allows to automatically convert the pasted URLs into notes.
 
 ## Usage
 
