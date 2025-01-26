@@ -98,9 +98,14 @@ export default class UrlNotesPlugin extends Plugin {
         const path = `${await getHPathByPath(notebookId,
             protyle.protyle.path)}/${title.replace(/\//g, " ")}`;
 
-        const docContent = includeContent ?
-            trimEmptyLines(urlContent) : `[${urlTitle}](${link})`;
-        const docId = await createDocWithMd(notebookId, path, docContent);
+        const docContent = () => {
+            const urlString = `URL: [${urlTitle}](${link})`;
+
+            if (!includeContent) return urlString;
+
+            return `${urlString}\n\n${trimEmptyLines(urlContent)}`;
+        }
+        const docId = await createDocWithMd(notebookId, path, docContent());
 
         if (useRef)
             protyle.insert(`<span data-type="block-ref" data-id="${docId}" data-subtype="d">${title}</span>`, false, true);
