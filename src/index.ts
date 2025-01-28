@@ -99,7 +99,7 @@ export default class UrlNotesPlugin extends Plugin {
             protyle.protyle.path)}/${title.replace(/\//g, " ")}`;
 
         const docContent = () => {
-            const urlString = `URL: [${urlTitle}](${link})`;
+            const urlString = `[${urlTitle}](${link})`;
 
             if (!includeContent) return urlString;
 
