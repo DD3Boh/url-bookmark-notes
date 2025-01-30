@@ -103,7 +103,7 @@ export default class UrlNotesPlugin extends Plugin {
 
             if (!includeContent) return urlString;
 
-            return `${urlString}\n\n${trimEmptyLines(urlContent)}`;
+            return `${urlString}\n\n---\n\n${trimEmptyLines(urlContent)}`;
         }
         const docId = await createDocWithMd(notebookId, path, docContent());
 
