@@ -212,8 +212,15 @@ export default class UrlNotesPlugin extends Plugin {
 
         if (this.convertPaste() && text.startsWith("http")) {
             try {
-                this.createURLNote(protyle, text,
-                    this.includeContent(), null, false, true);
+                this.createURLNote(
+                    protyle,
+                    text,
+                    this.includeContent(),
+                    true,
+                    null,
+                    false,
+                    true
+                );
             } catch (error) {
                 showMessage(error);
             }
