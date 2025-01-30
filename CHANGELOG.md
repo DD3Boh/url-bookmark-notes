@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 1.0.3
+
+- Add divider between URL and content in notes.
+- Add support for a default save directory.
+- Add toggle for choosing whether to use the default save directory or not.
+
+## Version 1.0.2
+
+- Remove "URL:" prefix inside notes.
+
 ## Version 1.0.1
 
 - Allow linking notes instead of using a block ref (this allows avoiding a link in the graph).
