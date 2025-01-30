@@ -10,6 +10,7 @@ Welcome to the **URL Bookmark Notes** for SiYuan! This plugin is designed to sim
 - **Automatic Block Reference:** The plugin automatically inserts a block reference link to the created note.
 - **Include the website content in the note:** Uses Mozilla's simplified readability mode to include a simplified version of the website in the note.
 - **Support converting from pasting:** The plugin also allows to automatically convert the pasted URLs into notes.
+- **Set a default path:** Provide a default path to save notes to instead of using the current note's directory.
 
 ## Usage
 
