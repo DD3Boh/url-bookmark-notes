@@ -22,7 +22,7 @@ export const getUrlContent = async (href) => {
     if (doc.characterSet.toLowerCase() === "utf-8")
         urlTitle = doc.title;
 
-    const urlContent = readableHTML.content;
+    const urlContent = readableHTML?.content;
 
     return { urlTitle, urlContent };
 }
