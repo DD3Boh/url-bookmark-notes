@@ -48,6 +48,22 @@ export class SettingsManager {
             },
         });
 
+        this.settingUtils.addItem({
+            key: "savePath",
+            value: "",
+            type: "textinput",
+            title: this.plugin.i18n.defaultSavePath,
+            description: this.plugin.i18n.defaultSavePathDesc,
+            action: {
+                // Called when focus is lost and content changes
+                callback: () => {
+                    // Return data and save it in real time
+                    let value = this.settingUtils.takeAndSave("savePath");
+                    console.log(value);
+                }
+            }
+        });
+
         try {
             this.settingUtils.load();
         } catch (error) {

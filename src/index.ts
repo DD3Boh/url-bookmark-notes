@@ -94,9 +94,13 @@ export default class UrlNotesPlugin extends Plugin {
 
         if (!title) title = urlTitle;
 
-        const notebookId = protyle.protyle.notebookId
-        const path = `${await getHPathByPath(notebookId,
-            protyle.protyle.path)}/${title.replace(/\//g, " ")}`;
+        const notebookId = protyle.protyle.notebookId;
+        let path = this.settingsManager.getPref("savePath");
+
+        if (path == null || path.trim().length == 0)
+            path = await getHPathByPath(notebookId, protyle.protyle.path);
+
+        path += `/${title.replace(/\//g, " ")}`;
 
         const docContent = () => {
             const urlString = `[${urlTitle}](${link})`;

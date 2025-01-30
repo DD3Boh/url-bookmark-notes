@@ -7,5 +7,7 @@
     "includeContent": "Include website content",
     "includeContentDesc": "Include the content of the page in the note. If disabled only the URL will be saved.",
     "convertPaste": "Convert pasted links",
-    "convertPasteDesc": "Automatically convert pasted links to notes, if the content is a URL."
+    "convertPasteDesc": "Automatically convert pasted links to notes, if the content is a URL.",
+    "defaultSavePath": "Default save path",
+    "defaultSavePathDesc": "The default path to save notes to. The full path is required, excluding the notebook name."
 }
