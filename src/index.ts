@@ -35,8 +35,25 @@ export default class UrlNotesPlugin extends Plugin {
     // Initial source: https://github.com/anarion80/siyuan-oembed
     URLInputDialog = (protyle: Protyle, rangeString: string): Promise<[string, boolean, boolean]> => {
         return new Promise((resolve, reject) => {
+            const isDefaultSavePathEmpty = this.savePath()?.trim()?.length == 0;
             let includeContent = this.includeContent();
-            let useDefaultSavePath = this.savePath()?.trim()?.length > 0;
+            let useDefaultSavePath = !isDefaultSavePathEmpty;
+
+            const savePathSwitchContent = () => {
+                if (!isDefaultSavePathEmpty) {
+                    return `
+                        <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
+                            <label for="useDefaultSavePath">
+                                ${this.i18n.useDefaultSavePath}
+                                <div class="fn__space" style="width: 295px;"></div>
+                            </label>
+                            <input type="checkbox" id="useDefaultSavePath" name="useDefaultSavePath"
+                                ${useDefaultSavePath ? 'checked' : ''} class="b3-switch"/>
+                        </div>
+                    `;
+                }
+                return '';
+            }
 
             const dialog = new Dialog({
                 content: `
@@ -51,15 +68,7 @@ export default class UrlNotesPlugin extends Plugin {
                         <input type="checkbox" id="includeContent" name="includeContent"
                             ${includeContent ? 'checked' : ''} class="b3-switch"/>
                     </div>
-                    <div class="fn__space" style="height: 5px;"></div>
-                    <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
-                        <label for="useDefaultSavePath">
-                            ${this.i18n.useDefaultSavePath}
-                            <div class="fn__space" style="width: 295px;"></div>
-                        </label>
-                        <input type="checkbox" id="useDefaultSavePath" name="useDefaultSavePath"
-                            ${useDefaultSavePath ? 'checked' : ''} class="b3-switch"/>
-                    </div>
+                    ${savePathSwitchContent()}
                     <div class="b3-dialog__action">
                         <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button>
                         <div class="fn__space"></div>
@@ -93,7 +102,7 @@ export default class UrlNotesPlugin extends Plugin {
             includeContentElement.addEventListener('change', () => {
                 includeContent = (includeContentElement as HTMLInputElement).checked;
             });
-            defSavePathElement.addEventListener('change', () => {
+            defSavePathElement?.addEventListener('change', () => {
                 useDefaultSavePath = (defSavePathElement as HTMLInputElement).checked;
             });
         });
