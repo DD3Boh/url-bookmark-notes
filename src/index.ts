@@ -33,30 +33,44 @@ export default class UrlNotesPlugin extends Plugin {
     }
 
     // Initial source: https://github.com/anarion80/siyuan-oembed
-    URLInputDialog = (protyle: Protyle, rangeString: string) => {
-        return new Promise<[string, boolean, boolean]>((resolve, reject) => {
+    URLInputDialog = (protyle: Protyle, rangeString: string): Promise<[string, boolean, boolean]> => {
+        return new Promise((resolve, reject) => {
             let includeContent = this.includeContent();
-            let useDefaultSavePath = this.savePath() != null && this.savePath().trim().length != 0;
+            let useDefaultSavePath = this.savePath()?.trim()?.length > 0;
 
             const dialog = new Dialog({
-                content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea></div>
-                        <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
-                        <label for="includeContent">${this.i18n.includeContent}<div class="fn__space" style="width: 280px;"></div></label>
-                        <input type="checkbox" id="includeContent" name="includeContent" ${includeContent ? 'checked' : ''} class="b3-switch"/>
-                        </div>
-                        <div class="fn__space" style="height: 5px;"></div>
-                        <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
-                        <label for="useDefaultSavePath">${this.i18n.useDefaultSavePath}<div class="fn__space" style="width: 295px;"></div></label>
-                        <input type="checkbox" id="useDefaultSavePath" name="useDefaultSavePath" ${useDefaultSavePath ? 'checked' : ''} class="b3-switch"/>
-                        </div>
-                        <div class="b3-dialog__action">
-                        <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button><div class="fn__space"></div>
+                content: `
+                    <div class="b3-dialog__content">
+                        <textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea>
+                    </div>
+                    <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
+                        <label for="includeContent">
+                            ${this.i18n.includeContent}
+                            <div class="fn__space" style="width: 280px;"></div>
+                        </label>
+                        <input type="checkbox" id="includeContent" name="includeContent"
+                            ${includeContent ? 'checked' : ''} class="b3-switch"/>
+                    </div>
+                    <div class="fn__space" style="height: 5px;"></div>
+                    <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
+                        <label for="useDefaultSavePath">
+                            ${this.i18n.useDefaultSavePath}
+                            <div class="fn__space" style="width: 295px;"></div>
+                        </label>
+                        <input type="checkbox" id="useDefaultSavePath" name="useDefaultSavePath"
+                            ${useDefaultSavePath ? 'checked' : ''} class="b3-switch"/>
+                    </div>
+                    <div class="b3-dialog__action">
+                        <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button>
+                        <div class="fn__space"></div>
                         <button class="b3-button b3-button--text">${this.i18n.confirm}</button>
-                        </div>`,
+                    </div>
+                `,
                 width: "520px",
                 destroyCallback: () => {
-                    if (rangeString == null)
+                    if (rangeString === null) {
                         protyle.insert(window.Lute.Caret, false, true);
+                    }
                 }
             });
 
