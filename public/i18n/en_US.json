@@ -9,5 +9,6 @@
     "convertPaste": "Convert pasted links",
     "convertPasteDesc": "Automatically convert pasted links to notes, if the content is a URL.",
     "defaultSavePath": "Default save path",
-    "defaultSavePathDesc": "The default path to save notes to. The full path is required, excluding the notebook name."
+    "defaultSavePathDesc": "The default path to save notes to. The full path is required, excluding the notebook name.",
+    "useDefaultSavePath": "Use default save path"
 }

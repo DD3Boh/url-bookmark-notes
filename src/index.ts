@@ -24,19 +24,30 @@ export default class UrlNotesPlugin extends Plugin {
         return this.settingsManager.getPref("includeContent");
     }
 
+    savePath = () => {
+        return this.settingsManager.getPref("savePath");
+    }
+
     convertPaste = () => {
         return this.settingsManager.getPref("convertPaste");
     }
 
     // Initial source: https://github.com/anarion80/siyuan-oembed
     URLInputDialog = (protyle: Protyle, rangeString: string) => {
-        return new Promise<[string, boolean]>((resolve, reject) => {
+        return new Promise<[string, boolean, boolean]>((resolve, reject) => {
             let includeContent = this.includeContent();
+            let useDefaultSavePath = this.savePath() != null && this.savePath().trim().length != 0;
+
             const dialog = new Dialog({
                 content: `<div class="b3-dialog__content"><textarea class="b3-text-field fn__block" placeholder="${this.i18n.enterUrl}"></textarea></div>
                         <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
                         <label for="includeContent">${this.i18n.includeContent}<div class="fn__space" style="width: 280px;"></div></label>
                         <input type="checkbox" id="includeContent" name="includeContent" ${includeContent ? 'checked' : ''} class="b3-switch"/>
+                        </div>
+                        <div class="fn__space" style="height: 5px;"></div>
+                        <div style="margin-left: 22px; margin-bottom: 5px" class="b3-switch__container">
+                        <label for="useDefaultSavePath">${this.i18n.useDefaultSavePath}<div class="fn__space" style="width: 295px;"></div></label>
+                        <input type="checkbox" id="useDefaultSavePath" name="useDefaultSavePath" ${useDefaultSavePath ? 'checked' : ''} class="b3-switch"/>
                         </div>
                         <div class="b3-dialog__action">
                         <button class="b3-button b3-button--cancel">${this.i18n.cancel}</button><div class="fn__space"></div>
@@ -51,7 +62,8 @@ export default class UrlNotesPlugin extends Plugin {
 
             const inputElement = dialog.element.querySelector("textarea");
             const btnsElement = dialog.element.querySelectorAll(".b3-button");
-            const checkboxElement = dialog.element.querySelector('#includeContent');
+            const includeContentElement = dialog.element.querySelector('#includeContent');
+            const defSavePathElement = dialog.element.querySelector('#useDefaultSavePath');
             dialog.bindInput(inputElement, () => {
                 (btnsElement[1] as HTMLElement).click();
             });
@@ -62,10 +74,13 @@ export default class UrlNotesPlugin extends Plugin {
             });
             btnsElement[1].addEventListener("click", () => {
                 dialog.destroy();
-                resolve([inputElement.value, includeContent]);
+                resolve([inputElement.value, includeContent, useDefaultSavePath]);
             });
-            checkboxElement.addEventListener('change', () => {
-                includeContent = (checkboxElement as HTMLInputElement).checked;
+            includeContentElement.addEventListener('change', () => {
+                includeContent = (includeContentElement as HTMLInputElement).checked;
+            });
+            defSavePathElement.addEventListener('change', () => {
+                useDefaultSavePath = (defSavePathElement as HTMLInputElement).checked;
             });
         });
     };
@@ -74,6 +89,7 @@ export default class UrlNotesPlugin extends Plugin {
         protyle: Protyle,
         link: string,
         includeContent: boolean,
+        useDefaultSavePath: boolean,
         title: string = null,
         useRef: boolean = false,
         abortOnFailure: boolean = false
@@ -97,7 +113,7 @@ export default class UrlNotesPlugin extends Plugin {
         const notebookId = protyle.protyle.notebookId;
         let path = this.settingsManager.getPref("savePath");
 
-        if (path == null || path.trim().length == 0)
+        if (path == null || path.trim().length == 0 || !useDefaultSavePath)
             path = await getHPathByPath(notebookId, protyle.protyle.path);
 
         path += `/${title.replace(/\//g, " ")}`;
@@ -127,13 +143,13 @@ export default class UrlNotesPlugin extends Plugin {
         let title = rangeString
 
         try {
-            let [ link, includeContent ] = (await this.URLInputDialog(protyle, rangeString))
+            let [ link, includeContent, useDefaultSavePath ] = (await this.URLInputDialog(protyle, rangeString))
 
             if (!link) {
                 return;
             }
 
-            await this.createURLNote(protyle, link, includeContent, title, useRef);
+            await this.createURLNote(protyle, link, includeContent, useDefaultSavePath, title, useRef);
         } catch (error) {
             console.error(error);
         }
