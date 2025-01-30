@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.4
+
+- Fix function call in the paste function
+
 ## Version 1.0.3
 
 - Add divider between URL and content in notes.
