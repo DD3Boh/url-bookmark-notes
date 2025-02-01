@@ -16,6 +16,9 @@ export const getUrlContent = async (href) => {
         return { urlTitle: null, urlContent: null };
 
     const doc = new DOMParser().parseFromString(data?.body, "text/html");
+
+    doc.head.appendChild(Object.assign(doc.createElement("base"), { href: href }));
+
     const readableHTML = new Readability(doc).parse();
     let urlTitle = null;
 
