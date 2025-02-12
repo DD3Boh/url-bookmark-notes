@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.0.5
+
+- Fix images embedding when including the website content in some contexts
+- Fix crash when the url content is null
+
 ## Version 1.0.4
 
 - Fix function call in the paste function
