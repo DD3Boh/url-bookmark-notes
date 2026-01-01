@@ -178,32 +178,6 @@ export default class UrlNotesPlugin extends Plugin {
         }
     }
 
-    updateProtyleToolbar = (toolbar) => {
-        toolbar.push(
-            {
-                name: "insert-url-note-ref",
-                icon: "iconUrl",
-                hotkey: "⇧⌘,",
-                tipPosition: "n",
-                tip: this.i18n.urlRefNote,
-                click: async (protyle: Protyle) => {
-                    this.createURLNoteWithDialog(protyle, true);
-                }
-            },
-            {
-                name: "insert-url-note-link",
-                icon: "iconUrl",
-                hotkey: "⇧⌘L",
-                tipPosition: "n",
-                tip: this.i18n.urlLinkNote,
-                click: async (protyle: Protyle) => {
-                    this.createURLNoteWithDialog(protyle, false);
-                }
-            },
-        )
-        return toolbar;
-    }
-
     private eventBusPaste(event: any) {
         event.preventDefault();
 
@@ -259,6 +233,26 @@ export default class UrlNotesPlugin extends Plugin {
                 }
             },
         ]
+
+        this.addCommand({
+            langKey: "insert-url-note-ref",
+            langText: this.i18n.urlRefNote,
+            hotkey: "⇧⌘,",
+            callback: () => {},
+            editorCallback: (protyle: any) => {
+                this.createURLNoteWithDialog(protyle.getInstance(), true);
+            }
+        });
+
+        this.addCommand({
+            langKey: "insert-url-note-link",
+            langText: this.i18n.urlLinkNote,
+            hotkey: "⇧⌘L",
+            callback: () => {},
+            editorCallback: (protyle: any) => {
+                this.createURLNoteWithDialog(protyle.getInstance(), false);
+            }
+        });
 
         this.eventBus.on("paste", (e) => this.eventBusPaste(e));
     }
