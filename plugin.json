@@ -2,7 +2,7 @@
   "name": "url-bookmark-notes",
   "author": "DD3Boh",
   "url": "https://github.com/DD3Boh/url-bookmark-notes",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "minAppVersion": "3.0.12",
   "backends": [
     "windows",

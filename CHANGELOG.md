@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.6
+
+- Fix keyboard shortcuts menu
+
 ## Version 1.0.5
 
 - Fix images embedding when including the website content in some contexts
